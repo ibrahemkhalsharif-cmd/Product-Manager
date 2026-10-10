@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_wtf.csrf import CSRFProtect
 
-from . import db, errors
+from . import db, errors, products
 from .config import Settings, validate_secret_key
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,6 +35,7 @@ def create_app(settings: Settings | None = None) -> Flask:
     csrf.init_app(app)
     db.init_app(app)
     errors.init_app(app)
+    app.register_blueprint(products.bp)
 
     @app.get("/health")
     def health():

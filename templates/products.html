@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}المنتجات{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>المنتجات</h1>
+  <a class="button" href="{{ url_for('products.add') }}">إضافة منتج</a>
+</div>
+
+<form class="search" method="get" action="{{ url_for('products.index') }}" role="search">
+  <label class="sr-only" for="q">بحث بالاسم أو الباركود</label>
+  <input id="q" name="q" type="search" value="{{ q }}" maxlength="100"
+         placeholder="ابحث بالاسم أو الباركود" autocomplete="off">
+  <button class="button" type="submit">بحث</button>
+  {% if q %}
+    <a class="button button--secondary" href="{{ url_for('products.index') }}">عرض الكل</a>
+  {% endif %}
+</form>
+
+{% if products %}
+  <p class="summary">
+    {% if q %}عدد النتائج: {{ total }}{% else %}إجمالي المنتجات: {{ total }}{% endif %}
+    {% if pages > 1 %} &middot; الصفحة {{ page }} من {{ pages }}{% endif %}
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">الاسم</th>
+          <th scope="col">الباركود</th>
+          <th scope="col">التصنيف</th>
+          <th scope="col">السعر</th>
+          <th scope="col">الكمية</th>
+          <th scope="col">الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>{{ p.name }}</td>
+          <td><span class="ltr">{{ p.barcode }}</span></td>
+          <td>{{ p.category }}</td>
+          <td><span class="ltr">{{ '{:,.2f}'.format(p.price) }}</span></td>
+          <td>
+            <span class="ltr">{{ p.quantity }}</span>
+            {% if p.quantity == 0 %}<span class="badge badge--out">نفد</span>{% endif %}
+          </td>
+          <td>
+            <div class="actions">
+              <a class="button button--secondary button--small"
+                 href="{{ url_for('products.edit', product_id=p.id) }}"
+                 aria-label="تعديل المنتج {{ p.name }}">تعديل</a>
+              <form method="post" action="{{ url_for('products.delete', product_id=p.id) }}"
+                    data-confirm="هل تريد حذف المنتج «{{ p.name }}»؟ لا يمكن التراجع عن هذا الإجراء.">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="q" value="{{ q }}">
+                <input type="hidden" name="page" value="{{ page }}">
+                <button class="button button--danger button--small" type="submit"
+                        aria-label="حذف المنتج {{ p.name }}">حذف</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if pages > 1 %}
+  <nav class="pagination" aria-label="التنقل بين الصفحات">
+    {% if page > 1 %}
+      <a href="{{ url_for('products.index', q=q or none, page=(page - 1) if page > 2 else none) }}" rel="prev">السابق</a>
+    {% endif %}
+    {% for n in page_numbers %}
+      {% if n is none %}
+        <span class="gap" aria-hidden="true">…</span>
+      {% elif n == page %}
+        <span class="current" aria-current="page">{{ n }}</span>
+      {% else %}
+        <a href="{{ url_for('products.index', q=q or none, page=n if n > 1 else none) }}">{{ n }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page < pages %}
+      <a href="{{ url_for('products.index', q=q or none, page=page + 1) }}" rel="next">التالي</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+{% else %}
+  <div class="empty">
+    {% if q %}
+      <p>لا توجد منتجات تطابق «{{ q }}».</p>
+      <a class="button button--secondary" href="{{ url_for('products.index') }}">عرض كل المنتجات</a>
+    {% else %}
+      <p>لا توجد منتجات بعد.</p>
+      <a class="button" href="{{ url_for('products.add') }}">أضف أول منتج</a>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

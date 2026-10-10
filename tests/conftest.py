@@ -6,7 +6,7 @@ import pymysql
 import pytest
 from dotenv import load_dotenv
 
-from app import create_app
+from app import create_app, db
 from app.config import Settings
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -78,3 +78,19 @@ def client(flask_app):
 @pytest.fixture()
 def db_app(test_db_settings):
     return create_app(test_db_settings)
+
+
+@pytest.fixture()
+def shop(db_app):
+    """Page tests: start from empty tables and leave them empty afterwards (test database only)."""
+    def wipe():
+        with db_app.app_context():
+            conn = db.get_db()
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM products")
+                cur.execute("DELETE FROM categories")
+            conn.commit()
+
+    wipe()
+    yield db_app
+    wipe()

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% macro field_error(name) %}
+  {% if errors.get(name) %}
+    <p class="field-error" id="{{ name }}-error">{{ errors[name] }}</p>
+  {% endif %}
+{% endmacro %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{{ title }}</h1>
+</div>
+
+{% if errors %}
+  <div class="flash flash-error" role="alert">تعذّر حفظ المنتج. صحّح الحقول المحددة أدناه ثم حاول مرة أخرى.</div>
+{% endif %}
+
+<form class="card form" method="post" novalidate>
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <div class="field">
+    <label for="name">اسم المنتج</label>
+    <input id="name" name="name" type="text" maxlength="150" required
+           value="{{ values.name }}"
+           {% if errors.get('name') %}aria-invalid="true" aria-describedby="name-error"{% endif %}>
+    {{ field_error('name') }}
+  </div>
+
+  <div class="field">
+    <label for="barcode">الباركود</label>
+    <input id="barcode" name="barcode" type="text" maxlength="50" required dir="ltr"
+           value="{{ values.barcode }}"
+           {% if errors.get('barcode') %}aria-invalid="true" aria-describedby="barcode-error"{% endif %}>
+    {{ field_error('barcode') }}
+  </div>
+
+  <div class="field">
+    <label for="category_id">التصنيف</label>
+    <select id="category_id" name="category_id" required
+            {% if errors.get('category_id') %}aria-invalid="true" aria-describedby="category_id-error"{% endif %}>
+      <option value="">اختر التصنيف</option>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {% if values.category_id|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    {{ field_error('category_id') }}
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="price">السعر</label>
+      <input id="price" name="price" type="text" inputmode="decimal" required dir="ltr"
+             value="{{ values.price }}"
+             {% if errors.get('price') %}aria-invalid="true" aria-describedby="price-error"{% endif %}>
+      {{ field_error('price') }}
+    </div>
+
+    <div class="field">
+      <label for="quantity">الكمية</label>
+      <input id="quantity" name="quantity" type="text" inputmode="numeric" required dir="ltr"
+             value="{{ values.quantity }}"
+             {% if errors.get('quantity') %}aria-invalid="true" aria-describedby="quantity-error"{% endif %}>
+      {{ field_error('quantity') }}
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">حفظ</button>
+    <a class="btn btn-link" href="{{ url_for('products') }}">إلغاء</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,10 +1,17 @@
-{% extends "base.html" %}
-{% block title %}{{ heading }}{% endblock %}
-
-{% block content %}
-<div class="empty">
-  <h1>{{ heading }}</h1>
-  <p>{{ message }}</p>
-  <a class="btn btn-primary" href="{{ url_for('products') }}">العودة إلى المنتجات</a>
-</div>
-{% endblock %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} | مدير المنتجات</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="error-page">
+  <main class="error-card">
+    <p class="error-code" dir="ltr">{{ status }}</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <a class="button" href="/">العودة إلى المنتجات</a>
+  </main>
+</body>
+</html>

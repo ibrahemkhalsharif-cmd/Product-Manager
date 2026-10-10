@@ -1,5 +1,7 @@
 # Product Manager
 
+> **Work in progress:** this project is being rebuilt in stages. The setup and run instructions below describe the old version and are rewritten in the final stage.
+
 A small two-page web app for managing a shop's product list, with an Arabic, fully right-to-left interface.
 
 - **Products page:** table of all products (name, barcode, category, price, quantity), search by name or barcode, and Edit / Delete buttons on every row (delete asks for confirmation).
